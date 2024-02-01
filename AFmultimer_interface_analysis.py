@@ -1,7 +1,6 @@
 
 """
 AF_multimer_interface_analysis.py
-Author: Danton.Ivanochko@sickkids.ca
 Updated: 2024-01-29
 """
 
@@ -106,7 +105,7 @@ def parseScoresFile(scores_json_file):
 def interface_chains(input_interface):
     """
     Returns a dictionary of chain(s) for each side of the interfaces.
-    e.g. for AB_CD it will return ['A', 'B']
+    e.g. for AB_CD it will return ['A', 'B'] and ['C', 'D']
     """
     input_interface_string = input_interface
     split_interface = input_interface_string.split("_")
