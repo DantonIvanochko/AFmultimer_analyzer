@@ -47,35 +47,37 @@ def interfaceAnalyzer(input_pose, input_interface):
     #ia_04 = interface_analyzer.get_chain_groups() # lists of pyrosetta residues indices for chains
     #ia_28 = interface_analyzer.get_interface_set() # lists of pyrosetta residues indices for interface residues
 
-    allData_dG                            = np.asarray(allData.dG)                          # Rosetta Energy Units (REU) ~ kcal/mol
+    allData_dG                            = np.asarray(allData.dG)                          # Change in energy upon complexion in each InterfaceRegion. Rosetta Energy Units (REU) ~ kcal/mol
     allData_crossterm_interface_energy    = np.asarray(allData.crossterm_interface_energy)  # Rosetta Energy Units (REU) ~ kcal/mol
     allData_dSASA                         = np.asarray(allData.dSASA)                       # deltaSASA is BSA
     allData_dhSASA                        = np.asarray(allData.dhSASA)                      # delta HYDROPHOBIC SASA 
-    allData_interface_nres                = np.asarray(allData.interface_nres)
+    allData_interface_nres                = np.asarray(allData.interface_nres)              # Total number of interface residues. 
     allData_sc_value                      = allData.sc_value                                # shape complementarity score
-    allData_interface_hbonds              = allData.interface_hbonds
-    allData_total_hb_E                    = allData.total_hb_E
+    allData_interface_hbonds              = allData.interface_hbonds                        # Total number of interface Hbonds. 
+    allData_total_hb_E                    = allData.total_hb_E                              # Total energy of interface Hbonds. 
+    allData_delta_unsat_hbonds            = allData.delta_unsat_hbonds                      # Number of unsaturated hbonds in complex. 
     allDataPerRes_BoolInterfaceRes        = list(allDataPerRes.interface_residues)
     
-    return {'interface_dG'              : allData_dG[0],
-            'interface_dG_side1'        : allData_dG[1],
-            'interface_dG_side2'        : allData_dG[2],
-            'interface_crossterm'       : allData_crossterm_interface_energy[0],
-            'interface_crossterm_side1' : allData_crossterm_interface_energy[1],
-            'interface_crossterm_side2' : allData_crossterm_interface_energy[2],
-            'interface_dSASA'           : allData_dSASA[0],
-            'interface_dSASA_side1'     : allData_dSASA[1],
-            'interface_dSASA_side2'     : allData_dSASA[2],
-            'interface_dhSASA'          : allData_dhSASA[0],
-            'interface_dhSASA_side1'    : allData_dhSASA[1],
-            'interface_dhSASA_side2'    : allData_dhSASA[2],
-            'interface_nres'            : allData_interface_nres[0],
-            'interface_nres_side1'      : allData_interface_nres[1],
-            'interface_nres_side2'      : allData_interface_nres[2],
-            'interface_sc_value'        : allData_sc_value,
-            'interface_hbonds'          : allData_interface_hbonds,  
-            'interface_hbonds_E'        : allData_total_hb_E,
-            'listBoolInterfaceRes'      : allDataPerRes_BoolInterfaceRes}
+    return {'interface_dG'                 : allData_dG[0],
+            'interface_dG_side1'           : allData_dG[1],
+            'interface_dG_side2'           : allData_dG[2],
+            'interface_crossterm'          : allData_crossterm_interface_energy[0],
+            'interface_crossterm_side1'    : allData_crossterm_interface_energy[1],
+            'interface_crossterm_side2'    : allData_crossterm_interface_energy[2],
+            'interface_dSASA'              : allData_dSASA[0],
+            'interface_dSASA_side1'        : allData_dSASA[1],
+            'interface_dSASA_side2'        : allData_dSASA[2],
+            'interface_dhSASA'             : allData_dhSASA[0],
+            'interface_dhSASA_side1'       : allData_dhSASA[1],
+            'interface_dhSASA_side2'       : allData_dhSASA[2],
+            'interface_nres'               : allData_interface_nres[0],
+            'interface_nres_side1'         : allData_interface_nres[1],
+            'interface_nres_side2'         : allData_interface_nres[2],
+            'interface_sc_value'           : allData_sc_value,
+            'interface_hbonds'             : allData_interface_hbonds,  
+            'interface_hbonds_E'           : allData_total_hb_E,
+            'interface_delta_unsat_hbonds' : allData_delta_unsat_hbonds,
+            'listBoolInterfaceRes'         : allDataPerRes_BoolInterfaceRes}
 
 
 
@@ -187,9 +189,9 @@ def main(args):
     if not output_csv_file.is_file():
         # create file and add heads
         with open(args.output_csv, 'w') as f:
-            f.write("model,scores,interface,interface_dG,crossterm_interface_E,interface_dSASA,interface_dhSASA,interface_n_res,interface_sc_value,interface_hbonds,interface_hbonds_E,average_pae,pae_interface,average_plddt,plddt_interface,ptm,iptm\n") ### ADD HEADERS!!!
+            f.write("model,scores,interface,interface_dG,crossterm_interface_E,interface_dSASA,interface_dhSASA,interface_n_res,interface_sc_value,interface_hbonds,interface_hbonds_E,interface_delta_unsat_hbonds,average_pae,pae_interface,average_plddt,plddt_interface,ptm,iptm\n") ### ADD HEADERS!!!
     with open(args.output_csv, 'a') as f:
-        f.write(f"{args.input_pdb},{args.input_scores},{args.interface_chains},{test_interfaceAnalyzer['interface_dG']},{test_interfaceAnalyzer['interface_crossterm']},{test_interfaceAnalyzer['interface_dSASA']},{test_interfaceAnalyzer['interface_dhSASA']},{test_interfaceAnalyzer['interface_nres']},{test_interfaceAnalyzer['interface_sc_value']},{test_interfaceAnalyzer['interface_hbonds']},{test_interfaceAnalyzer['interface_hbonds_E']},{np.mean(test_parseScoresFile['score_pae'])},{test_get_interface_pae},{np.mean(test_parseScoresFile['score_plddt'])},{test_get_interface_plddt},{test_parseScoresFile['score_ptm']},{test_parseScoresFile['score_iptm']}\n") ### ADD ALL THE CALCULATED RESULTS!!!
+        f.write(f"{args.input_pdb},{args.input_scores},{args.interface_chains},{test_interfaceAnalyzer['interface_dG']},{test_interfaceAnalyzer['interface_crossterm']},{test_interfaceAnalyzer['interface_dSASA']},{test_interfaceAnalyzer['interface_dhSASA']},{test_interfaceAnalyzer['interface_nres']},{test_interfaceAnalyzer['interface_sc_value']},{test_interfaceAnalyzer['interface_hbonds']},{test_interfaceAnalyzer['interface_hbonds_E']},test_interfaceAnalyzer['interface_delta_unsat_hbonds']},{np.mean(test_parseScoresFile['score_pae'])},{test_get_interface_pae},{np.mean(test_parseScoresFile['score_plddt'])},{test_get_interface_plddt},{test_parseScoresFile['score_ptm']},{test_parseScoresFile['score_iptm']}\n") ### ADD ALL THE CALCULATED RESULTS!!!
 
 
 
